@@ -1,0 +1,23 @@
+{
+  "name": "mern-react-times-api",
+  "version": "1.0.0",
+  "description": "API for the Mern React times app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/urlDev/mern-react-times-api.git"
+  },
+  "author": "Can Ural",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/urlDev/mern-react-times-api/issues"
+  },
+  "homepage": "https://github.com/urlDev/mern-react-times-api#readme",
+  "dependencies": {
+    "mongoose": "^5.11.2",
+    "validator": "^13.5.1"
+  }
+}
