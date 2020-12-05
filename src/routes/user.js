@@ -1,7 +1,10 @@
 const express = require('express');
-const router = new express.Router();
+const multer = require('multer');
+const sharp = require('sharp');
+
 const auth = require('../middleware/auth');
 const User = require('../models/user');
+const router = new express.Router();
 
 router.post('/profile/register', async(req, res) => {
     const user = new User(req.body);
@@ -76,6 +79,66 @@ router.delete('/profile', auth, async(req, res) => {
         res.send(req.user);
     } catch (error) {
         res.status(500).send();
+    }
+});
+
+const upload = multer({
+    limits: { fileSize: 2000000 },
+    fileFilter(req, file, cb) {
+        if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+            return cb(new Error('Please upload an image'));
+        }
+        cb(undefined, true);
+    },
+});
+
+router.post(
+    '/profile/avatar',
+    auth,
+    upload.single('avatar'),
+    async(req, res) => {
+        try {
+            const png = await sharp(req.file.buffer)
+                .resize({ width: 300, height: 300 })
+                .png()
+                .toBuffer();
+
+            const webp = await sharp(req.file.buffer)
+                .resize({ width: 300, height: 300 })
+                .webp()
+                .toBuffer();
+
+            req.user.avatar = { png, webp };
+            await req.user.save();
+            res.send();
+        } catch (error) {
+            res.send(error);
+        }
+    },
+    // it has to be (error, req, res, next) so express would understand the error
+    // callback to catch errors
+    (error, req, res, next) => {
+        res.status(400).send({ Error: error.message });
+    },
+);
+
+router.delete('/profile/avatar', auth, async(req, res) => {
+    req.user.avatar = undefined;
+    await req.user.save();
+    res.send();
+});
+
+router.get('/profile/:id/avatar', async(req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+
+        if (!user || !user.avatar) {
+            throw new Error();
+        }
+
+        res.send(user.avatar);
+    } catch (error) {
+        res.status(404).send();
     }
 });
 

@@ -41,6 +41,14 @@ const userSchema = new mongoose.Schema({
             required: true,
         },
     }, ],
+    avatar: {
+        png: {
+            type: Buffer,
+        },
+        webp: {
+            type: Buffer,
+        },
+    },
 });
 
 // symbols name is what we gave just now
