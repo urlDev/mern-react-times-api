@@ -1,6 +1,9 @@
 const express = require('express');
 const multer = require('multer');
 const sharp = require('sharp');
+require('dotenv').config();
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SEND_GRID_API_KEY);
 
 const auth = require('../middleware/auth');
 const User = require('../models/user');
@@ -9,9 +12,16 @@ const router = new express.Router();
 router.post('/profile/register', async(req, res) => {
     const user = new User(req.body);
 
+    const msg = {
+        to: user.email,
+        from: 'mernreacttimes@gmail.com',
+        templateId: 'd-ef3ebe4075b641c29d28616cd8979bd6',
+    };
+
     try {
         const token = await user.generateAuthToken();
         await user.save();
+        await sgMail.send(msg);
         res.status(201).send({ user, token });
     } catch (error) {
         res.status(400).send(error);
@@ -74,8 +84,15 @@ router.patch('/profile', auth, async(req, res) => {
 });
 
 router.delete('/profile', auth, async(req, res) => {
+    const msg = {
+        to: req.user.email,
+        from: 'mernreacttimes@gmail.com',
+        templateId: 'd-66a1be3f8fc1448ba85ff332fe9be508',
+    };
+
     try {
         await req.user.remove();
+        await sgMail.send(msg);
         res.send(req.user);
     } catch (error) {
         res.status(500).send();

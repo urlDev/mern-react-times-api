@@ -4,7 +4,7 @@ const User = require('../models/user');
 const auth = async(req, res, next) => {
     try {
         const token = req.header('Authorization').replace('Bearer ', '');
-        const decoded = jwt.verify(token, 'react-times');
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         // when token gets saved, it is saved with user id so it has the id inside it
         const user = await User.findOne({
             _id: decoded._id,
