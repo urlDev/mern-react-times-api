@@ -1,7 +1,6 @@
 const express = require('express');
 const multer = require('multer');
 const sharp = require('sharp');
-require('dotenv').config();
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SEND_GRID_API_KEY);
 
@@ -116,12 +115,12 @@ router.post(
     async(req, res) => {
         try {
             const png = await sharp(req.file.buffer)
-                .resize({ width: 300, height: 300 })
+                .resize({ width: 400, height: 400 })
                 .png()
                 .toBuffer();
 
             const webp = await sharp(req.file.buffer)
-                .resize({ width: 300, height: 300 })
+                .resize({ width: 400, height: 400 })
                 .webp()
                 .toBuffer();
 
