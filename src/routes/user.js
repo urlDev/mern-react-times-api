@@ -5,11 +5,20 @@ const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SEND_GRID_API_KEY);
 
 const auth = require('../middleware/auth');
+const avatar = require('../utils/avatar');
 const User = require('../models/user');
 const router = new express.Router();
 
 router.post('/profile/register', async(req, res) => {
-    const user = new User(req.body);
+    const image = await avatar(req.body.email);
+    const userWithImage = {
+        ...req.body,
+        avatar: {
+            png: image,
+        },
+    };
+
+    const user = new User(userWithImage);
 
     const msg = {
         to: user.email,
