@@ -55,7 +55,7 @@ router.delete('/:id', auth, async(req, res) => {
 
         res.send(symbol);
     } catch (error) {
-        res.status(500).send();
+        res.status(404).send();
     }
 });
 

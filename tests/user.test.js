@@ -1,19 +1,7 @@
 const request = require('supertest');
-const jwt = require('jsonwebtoken');
-const mongoose = require('mongoose');
 const app = require('../src/app');
 const User = require('../src/models/user');
-
-const userOneId = new mongoose.Types.ObjectId();
-const userOne = {
-    _id: userOneId,
-    name: 'John',
-    email: 'john@example.com',
-    password: 'abc123!',
-    tokens: [{
-        token: jwt.sign({ _id: userOneId }, process.env.JWT_SECRET),
-    }, ],
-};
+const { userOneId, userOne, setupDb } = require('./fixtures/db');
 
 const userTwo = {
     name: 'Iannis',
@@ -21,10 +9,7 @@ const userTwo = {
     password: 'abc123!',
 };
 
-beforeEach(async() => {
-    await User.deleteMany();
-    await new User(userOne).save();
-});
+beforeEach(setupDb);
 
 test('Should sign up a new user', async() => {
     const response = await request(app)
@@ -89,4 +74,28 @@ test('Should delete account for user', async() => {
 
 test('Should not delete account for unauthorized user', async() => {
     await request(app).delete('/profile').send().expect(401);
+});
+
+test('Should upload avatar image', async() => {
+    await request(app)
+        .post('/profile/avatar')
+        .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
+        .attach('avatar', 'tests/fixtures/profile-pic.jpg')
+        .expect(200);
+
+    const user = await User.findById(userOneId);
+    // checking if user avatar is type of Buffer
+    // Since I set avatar with both webp and png, I am checking one of them
+    expect(user.avatar.png).toEqual(expect.any(Buffer));
+});
+
+test('Should update user', async() => {
+    const response = await request(app)
+        .patch('/profile')
+        .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
+        .send({ name: 'John' })
+        .expect(200);
+
+    const user = await User.findById(response.body._id);
+    expect(user.name).toBe('John');
 });
