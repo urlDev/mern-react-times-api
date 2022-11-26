@@ -1,18 +1,18 @@
-const express = require("express");
-const multer = require("multer");
-const sharp = require("sharp");
-const sgMail = require("@sendgrid/mail");
+const express = require('express');
+const multer = require('multer');
+const sharp = require('sharp');
+const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SEND_GRID_API_KEY);
 
-const auth = require("../middleware/auth");
-const avatar = require("../utils/avatar");
-const User = require("../models/user");
+const auth = require('../middleware/auth');
+const avatar = require('../utils/avatar');
+const User = require('../models/user');
 const router = new express.Router();
 
-router.post("/profile/register", async (req, res) => {
-  const image = await avatar(req.body.email);
+router.post('/profile/register', async (req, res) => {
+  const image = await avatar(req.query.email);
   const userWithImage = {
-    ...req.body,
+    ...req.query,
     avatar: {
       png: image,
     },
@@ -22,12 +22,13 @@ router.post("/profile/register", async (req, res) => {
 
   const msg = {
     to: user.email,
-    from: "mernreacttimes@gmail.com",
-    templateId: "d-ef3ebe4075b641c29d28616cd8979bd6",
+    from: process.env.SEND_GRID_EMAIL,
+    templateId: process.env.SEND_GRID_REGISTER_TEMPLATE_ID,
   };
 
   try {
     const token = await user.generateAuthToken();
+    console.log({ user, token });
     await user.save();
     await sgMail.send(msg);
     res.status(201).send({ user, token });
@@ -36,11 +37,11 @@ router.post("/profile/register", async (req, res) => {
   }
 });
 
-router.post("/profile/login", async (req, res) => {
+router.post('/profile/login', async (req, res) => {
   try {
     const user = await User.findByCredentials(
-      req.body.email,
-      req.body.password
+      req.query.email,
+      req.query.password
     );
     const token = await user.generateAuthToken();
 
@@ -50,7 +51,7 @@ router.post("/profile/login", async (req, res) => {
   }
 });
 
-router.post("/profile/logout", auth, async (req, res) => {
+router.post('/profile/logout', auth, async (req, res) => {
   try {
     req.user.tokens = req.user.tokens.filter(
       (token) => token.token !== req.token
@@ -63,7 +64,7 @@ router.post("/profile/logout", auth, async (req, res) => {
   }
 });
 
-router.post("/profile/logoutAll", auth, async (req, res) => {
+router.post('/profile/logoutAll', auth, async (req, res) => {
   try {
     req.user.tokens = [];
     await req.user.save();
@@ -74,15 +75,15 @@ router.post("/profile/logoutAll", auth, async (req, res) => {
   }
 });
 
-router.get("/profile", auth, async (req, res) => {
+router.get('/profile', auth, async (req, res) => {
   res.send(req.user);
 });
 
-router.patch("/profile", auth, async (req, res) => {
-  const updates = Object.keys(req.body);
+router.patch('/profile', auth, async (req, res) => {
+  const updates = Object.keys(req.query);
 
   try {
-    updates.forEach((update) => (req.user[update] = req.body[update]));
+    updates.forEach((update) => (req.user[update] = req.query[update]));
     await req.user.save();
 
     res.send(req.user);
@@ -91,11 +92,11 @@ router.patch("/profile", auth, async (req, res) => {
   }
 });
 
-router.delete("/profile", auth, async (req, res) => {
+router.delete('/profile', auth, async (req, res) => {
   const msg = {
     to: req.user.email,
-    from: "mernreacttimes@gmail.com",
-    templateId: "d-66a1be3f8fc1448ba85ff332fe9be508",
+    from: process.env.SEND_GRID_EMAIL,
+    templateId: process.env.SEND_GRID_DELETE_TEMPLATE_ID,
   };
 
   try {
@@ -111,16 +112,16 @@ const upload = multer({
   limits: { fileSize: 2000000 },
   fileFilter(req, file, cb) {
     if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
-      return cb(new Error("Please upload an image"));
+      return cb(new Error('Please upload an image'));
     }
     cb(undefined, true);
   },
 });
 
 router.post(
-  "/profile/avatar",
+  '/profile/avatar',
   auth,
-  upload.single("avatar"),
+  upload.single('avatar'),
   async (req, res) => {
     try {
       const png = await sharp(req.file.buffer)
@@ -147,13 +148,13 @@ router.post(
   }
 );
 
-router.delete("/profile/avatar", auth, async (req, res) => {
+router.delete('/profile/avatar', auth, async (req, res) => {
   req.user.avatar = undefined;
   await req.user.save();
   res.send();
 });
 
-router.get("/profile/:id/avatar", async (req, res) => {
+router.get('/profile/:id/avatar', async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
 
