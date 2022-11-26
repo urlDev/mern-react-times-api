@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-const url = 'https://urldev.fly.dev';
+const url = process.env.API_URL;
 
 const avatar = async (id) => {
   let image;
