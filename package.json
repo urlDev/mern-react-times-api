@@ -1,43 +1,43 @@
 {
-    "name": "mern-react-times-api",
-    "version": "1.0.0",
-    "description": "API for the Mern React times app",
-    "main": "index.js",
-    "scripts": {
-        "start": "node src/index.js",
-        "dev": "env-cmd -f ./config/dev.env nodemon src/index.js",
-        "test": "env-cmd -f  ./config/test.env jest --watch --runInBand"
-    },
-    "jest": {
-        "testEnvironment": "node"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/urlDev/mern-react-times-api.git"
-    },
-    "author": "Can Ural",
-    "license": "ISC",
-    "bugs": {
-        "url": "https://github.com/urlDev/mern-react-times-api/issues"
-    },
-    "homepage": "https://github.com/urlDev/mern-react-times-api#readme",
-    "dependencies": {
-        "@sendgrid/mail": "^7.4.0",
-        "adorable-avatars": "^0.4.1",
-        "axios": "^0.21.0",
-        "bcryptjs": "^2.4.3",
-        "cors": "^2.8.5",
-        "env-cmd": "^10.1.0",
-        "express": "^4.17.1",
-        "jsonwebtoken": "^8.5.1",
-        "mongoose": "^5.11.2",
-        "multer": "^1.4.2",
-        "sharp": "^0.22.1",
-        "validator": "^13.5.1"
-    },
-    "devDependencies": {
-        "jest": "^26.6.3",
-        "nodemon": "^2.0.6",
-        "supertest": "^6.0.1"
-    }
+  "name": "mern-react-times-api",
+  "version": "1.0.0",
+  "description": "API for the Mern React times app",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "env-cmd -f ./config/dev.env nodemon src/index.js",
+    "test": "env-cmd -f  ./config/test.env jest --watch --runInBand"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/urlDev/mern-react-times-api.git"
+  },
+  "author": "Can Ural",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/urlDev/mern-react-times-api/issues"
+  },
+  "homepage": "https://github.com/urlDev/mern-react-times-api#readme",
+  "dependencies": {
+    "@sendgrid/mail": "^7.4.0",
+    "adorable-avatars": "0.5.0",
+    "axios": "^0.21.0",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "env-cmd": "^10.1.0",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.11.2",
+    "multer": "^1.4.2",
+    "sharp": "0.28.0",
+    "validator": "^13.5.1"
+  },
+  "devDependencies": {
+    "jest": "^26.6.3",
+    "nodemon": "^2.0.6",
+    "supertest": "^6.0.1"
+  }
 }
