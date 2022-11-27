@@ -1,4 +1,4 @@
-React Times API
+## React Times API
 API for [React-Times](https://github.com/urlDev/mern-react-times)
 
 ### Scripts
